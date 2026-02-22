@@ -1,0 +1,14 @@
+[Unit]
+Description=Bluetooth Keyboard Emulator Server
+After=bluetooth.target
+
+[Service]
+Type=simple
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/python3 /usr/share/lua-remote-hub/scripts/btk_server.py
+WorkingDirectory=/usr/share/lua-remote-hub/scripts
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

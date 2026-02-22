@@ -1,0 +1,40 @@
+# --- Build Outputs ---
+build/
+bin/
+*.o
+*.so
+*.a
+
+# --- CMake Artifacts ---
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+install_manifest.txt
+CPackConfig.cmake
+CPackSourceConfig.cmake
+_CPack_Packages/
+
+# --- Packages (CPack Outputs) ---
+*.deb
+*.rpm
+*.tar.gz
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env/
+
+# --- System & Editor ---
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*~
+
+# --- Project Specific ---
+# ログファイルや一時的なテストデータ
+/var/log/lua-remote-hub/*
+*.log

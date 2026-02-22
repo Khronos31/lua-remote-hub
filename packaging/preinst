@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+    install|upgrade)
+        if systemctl is-active --quiet ir-daemon.service; then
+            systemctl stop ir-daemon.service || true
+        fi
+    ;;
+esac
+exit 0
+

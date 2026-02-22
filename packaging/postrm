@@ -1,0 +1,15 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+    purge)
+        # 設定とログを完全に消去
+        rm -rf /var/log/lua-remote-hub
+        systemctl daemon-reload
+    ;;
+    remove|upgrade)
+        systemctl daemon-reload
+    ;;
+esac
+exit 0
+

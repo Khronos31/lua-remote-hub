@@ -1,0 +1,23 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+    configure)
+        # 動的ディレクトリの作成
+        mkdir -p /var/log/lua-remote-hub
+        chmod 755 /var/log/lua-remote-hub
+
+        # システム反映
+        udevadm control --reload-rules && udevadm trigger
+        systemctl reload dbus || true
+        systemctl daemon-reload
+        systemctl restart bluetooth || true
+        
+        # サービスの有効化と起動
+        systemctl enable btk-server.service ir-daemon.service
+        systemctl restart btk-server.service || true
+        systemctl restart ir-daemon.service || true
+    ;;
+esac
+exit 0
+

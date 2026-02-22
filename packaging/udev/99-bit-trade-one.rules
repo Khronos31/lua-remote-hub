@@ -1,0 +1,3 @@
+# Bit Trade One USB IR REMOCON
+SUBSYSTEM=="usb", ATTR{idVendor}=="22ea", ATTR{idProduct}=="001e", MODE="0666", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="22ea", ATTRS{idProduct}=="001e", MODE="0666", TAG+="uaccess"
