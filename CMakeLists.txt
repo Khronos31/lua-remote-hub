@@ -6,19 +6,33 @@ set(CMAKE_CXX_STANDARD 11)
 # 依存関係
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBUSB REQUIRED libusb-1.0)
+pkg_check_modules(LIBCEC REQUIRED libcec)
 find_package(Lua 5.4 REQUIRED)
 
-include_directories(src ${LIBUSB_INCLUDE_DIRS} ${LUA_INCLUDE_DIR})
+include_directories(
+    src 
+    ${LIBUSB_INCLUDE_DIRS} 
+    ${LUA_INCLUDE_DIR} 
+    ${LIBCEC_INCLUDE_DIRS}
+)
 
 # Luaモジュールビルド (usbir.so)
-add_library(usbir SHARED src/usbir.cpp src/lua_modules.cpp)
+add_library(usbir SHARED src/usbir.cpp src/lua_usbir.cpp)
 target_link_libraries(usbir ${LIBUSB_LIBRARIES} ${LUA_LIBRARIES})
 set_target_properties(usbir PROPERTIES PREFIX "")
+
+# Luaモジュールビルド (cec.so)
+add_library(lua_cec_lib SHARED src/lua_cec.cpp)
+target_link_libraries(lua_cec_lib ${LIBCEC_LIBRARIES} ${LUA_LIBRARIES})
+set_target_properties(lua_cec_lib PROPERTIES 
+    PREFIX "" 
+    OUTPUT_NAME "cec"
+)
 
 # --- インストール定義 (dpkgが担当する配置) ---
 
 # 1. バイナリ・ライブラリ
-install(TARGETS usbir DESTINATION lib/lua/5.4)
+install(TARGETS usbir lua_cec_lib DESTINATION lib/lua/5.4)
 
 # 2. Luaスクリプト
 # 設定ファイルとリモコン定義（サンプル）を /etc に配置
@@ -55,7 +69,7 @@ set(CPACK_PACKAGE_NAME "lua-remote-hub")
 set(CPACK_PACKAGE_VENDOR "Khronos31")
 set(CPACK_PACKAGE_CONTACT "39792509+Khronos31@users.noreply.github.com")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "lua5.4, libusb-1.0-0, python3-dbus, python3-gi, bluez")
-set(CPACK_GENERATOR "DEB;RPM;TGZ")
+set(CPACK_GENERATOR "DEB")
 
 # メンテナスクリプトの登録
 set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA 

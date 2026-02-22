@@ -14,7 +14,8 @@ package.path = config_dir .. "?.lua;" ..
 -- Cモジュール (usbir.so) は標準のlibへ
 package.cpath = "/usr/lib/lua/5.4/?.so;" .. package.cpath
 
-local usbir = require("usbir")
+local usbir    = require("usbir")
+local cec      = require("cec")
 local remapper = require("remapper")
 
 -- 3. config.lua のロード
@@ -54,6 +55,15 @@ end
 -- remapperに送信デバイスをセット
 remapper.wdev = wdev
 
+-- cecをオープン
+local cec_ok, cec_err = cec.init()
+if cec_ok then
+  remapper.cec = cec
+  log("✅ CEC 初期化成功")
+else
+  log("⚠️ CEC 初期化失敗: " .. (cec_err or "不明"))
+end
+
 log("🚀 ir-remapper 起動成功")
 log("📡 受信待機中...")
 
@@ -73,6 +83,8 @@ while true do
         elseif t == "BT" then
           -- 非同期実行でラグを防止
           os.execute(string.format("python3 /usr/share/lua-remote-hub/scripts/send_key.py %s &", c))
+        elseif t == "CEC" then
+          cec.transmit(c)
         end
       end
     end
