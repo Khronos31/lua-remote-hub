@@ -23,8 +23,7 @@ install(TARGETS usbir DESTINATION lib/lua/5.4)
 # 2. Luaスクリプト
 # 設定ファイルとリモコン定義（サンプル）を /etc に配置
 install(FILES 
-    lua/config/config.lua 
-    lua/config/C-RT1.lua 
+    lua/config/config.lua.sample 
     DESTINATION /etc/lua-remote-hub
 )
 

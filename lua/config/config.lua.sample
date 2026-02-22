@@ -1,0 +1,68 @@
+-- =================================================================
+-- Lua Remote Hub Configuration Sample
+-- =================================================================
+-- このファイルを config.lua としてコピーして使用してください。
+-- $ sudo cp /etc/lua-remote-hub/config.lua.sample /etc/lua-remote-hub/config.lua
+-- =================================================================
+
+local remapper = require("remapper")
+
+-- 1. リモコン定義の読み込み
+-- /etc/lua-remote-hub/ に配置された定義ファイルをロードします。
+local C_RT1    = require("C-RT1")    -- 送信元（手元の物理リモコン：日立 Wooo等）
+local J_MX     = require("J-MX100RC") -- 送信先A（テレビ本体：三菱等）
+local RC_R2    = require("RC-R2")    -- 送信先B（レコーダー：日立/マクセル等）
+local Nintendo = require("Nintendo") -- 送信先C（Bluetooth：Fire TV/Switch等）
+
+local config = {}
+
+-- 2. モード（状態）の定義
+-- 操作対象を切り替えるためのテーブルを準備します。
+local mode_tv       = {}
+local mode_recorder = {}
+local mode_switch   = {}
+
+-- 3. 基本一括バインド
+-- remapper.bind(保存先, 送信元定義, 送信先定義)
+-- これにより、ボタン名が一致するものが自動的に紐付けられます。
+remapper.bind(mode_tv,       C_RT1, J_MX)
+remapper.bind(mode_recorder, C_RT1, RC_R2)
+remapper.bind(mode_switch,   C_RT1, Nintendo)
+
+-- 4. 数字キーの放送波集約設定
+-- 送信元リモコンに「地デジ・BS・CS」の区別があっても、
+-- 送信先が共通の「1〜12」キーのみの場合、ここで集約します。
+local prefixes = { "D_", "BS_", "CS_", "A_" }
+for i = 1, 12 do
+    for _, pre in ipairs(prefixes) do
+        local source_sig = C_RT1.keys[pre .. i]
+        if source_sig then
+            -- TVモード：三菱テレビの数字キーへ
+            mode_tv[source_sig]       = { type = "IR", code = J_MX.keys["NUM_"..i] }
+            -- レコーダーモード：日立レコーダーの数字キーへ
+            mode_recorder[source_sig] = { type = "IR", code = RC_R2.keys["NUM_"..i] }
+        end
+    end
+end
+
+-- 5. 特殊操作とモード切替の設定
+-- config.remap に登録した内容は、全モード共通で優先的に動作します。
+config.remap = {
+    -- [物理リモコンの信号] = 実行する処理
+    
+    -- モード切替：物理リモコンの特定のボタンを押した時にモードを変更する
+    [C_RT1.keys.SUB_CH]    = function() config.current_mode = mode_tv;       print("📺 Mode: TV") end,
+    [C_RT1.keys.WOOO_LINK] = function() config.current_mode = mode_recorder; print("📼 Mode: Recorder") end,
+    [C_RT1.keys.INTERNET]  = function() config.current_mode = mode_switch;   print("🎮 Mode: Bluetooth Switch") end,
+
+    -- 全モード共通：入力切替ボタンは常にテレビを操作する、などの個別設定
+    [C_RT1.keys.INPUT_SELECT] = { type = "IR", code = J_MX.keys.INPUT_SELECT },
+    
+    -- Bluetooth専用の個別マッピング例（Nintendo.lua にないボタンを個別に定義する場合）
+    -- [C_RT1.keys.GUIDE] = { type = "BT", code = "141" }, -- 141 = Consumer Guide
+}
+
+-- 起動時の初期モードを設定
+config.current_mode = mode_tv
+
+return config
