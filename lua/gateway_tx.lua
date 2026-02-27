@@ -2,6 +2,10 @@ local socket = require("socket")
 local remapper = require("remapper")
 local cjson = require("cjson")
 
+local function to_bytes(str)
+   return (str:gsub("..", function(cc) return string.char(tonumber(cc, 16)) end))
+end
+
 -- デバイス初期化
 remapper.wdev = assert(require("usbir").open(1))
 local cec = require("cec")
@@ -36,7 +40,7 @@ while true do
                 local status, cmd = pcall(cjson.decode, body)
                 if status then
                     if cmd.type == "ir"  then remapper.send_ir(cmd.code) end
-                    if cmd.type == "cec" then remapper.send_cec(code)  end
+                    if cmd.type == "cec" then remapper.send_cec(to_bytes(code))  end
                     if cmd.type == "bt"  then remapper.send_bt(cmd.code) end
                 else
                     print("❌ JSONパース失敗")
