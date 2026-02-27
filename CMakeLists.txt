@@ -45,6 +45,8 @@ install(FILES
 install(FILES 
     lua/main.lua 
     lua/remapper.lua 
+    lua/gateway_rx.lua 
+    lua/gateway_tx.lua 
     DESTINATION share/lua-remote-hub/lua
 )
 
@@ -53,15 +55,18 @@ install(DIRECTORY scripts/ DESTINATION share/lua-remote-hub/scripts)
 
 # 4. システム設定ファイル
 install(FILES packaging/dbus/com.khronos31.btkbservice.conf 
-        DESTINATION /etc/dbus-1/system.d)
+    DESTINATION /etc/dbus-1/system.d)
 install(FILES packaging/udev/99-bit-trade-one.rules 
-        DESTINATION lib/udev/rules.d)
-install(FILES packaging/systemd/btk-server.service 
-              packaging/systemd/ir-daemon.service 
-        DESTINATION lib/systemd/system)
+    DESTINATION lib/udev/rules.d)
+install(FILES
+    packaging/systemd/btk-server.service 
+    packaging/systemd/ir-daemon.service 
+    packaging/systemd/ha_gateway_rx.service 
+    packaging/systemd/ha_gateway_tx.service 
+    DESTINATION lib/systemd/system)
 install(FILES packaging/systemd/bluetooth-override.conf 
-        DESTINATION /etc/systemd/system/bluetooth.service.d
-        RENAME override.conf)
+    DESTINATION /etc/systemd/system/bluetooth.service.d
+    RENAME override.conf)
 
 # --- CPack 設定 ---
 

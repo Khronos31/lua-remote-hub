@@ -1,0 +1,14 @@
+[Unit]
+Description=Lua Remote Hub - Command Executor (TX)
+After=network.target
+
+[Service]
+WorkingDirectory=/usr/share/lua-remote-hub/lua
+ExecStart=/usr/bin/lua /usr/share/lua-remote-hub/lua/gateway_tx.lua
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
