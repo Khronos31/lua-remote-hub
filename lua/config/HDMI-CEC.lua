@@ -15,9 +15,9 @@ BUTTONS.keys = {
   NUM_10 = "10:44:20",
 
   -- 放送切換・番組表
-  -- MODE_DIGITAL = "10:44:", -- 地デジ
-  -- MODE_BS      = "10:44:", -- BS
-  -- MODE_CS      = "10:44:", -- CS
+  -- MODE_DIGITAL = "", -- 地デジ
+  -- MODE_BS      = "", -- BS
+  -- MODE_CS      = "", -- CS
   GUIDE        = "10:44:53", -- 番組表
 
   -- 中央操作エリア
