@@ -39,8 +39,8 @@ while true do
                 print("📩 受信JSON: " .. body)
                 local status, cmd = pcall(cjson.decode, body)
                 if status then
-                    if cmd.type == "ir"  then remapper.send_ir(cmd.code) end
-                    if cmd.type == "cec" then remapper.send_cec(to_bytes(code))  end
+                    if cmd.type == "ir"  then remapper.send_ir((to_bytes(cmd.code)) end
+                    if cmd.type == "cec" then remapper.send_cec(code)  end
                     if cmd.type == "bt"  then remapper.send_bt(cmd.code) end
                 else
                     print("❌ JSONパース失敗")
