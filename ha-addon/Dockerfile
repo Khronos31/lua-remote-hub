@@ -3,7 +3,7 @@ FROM $BUILD_FROM
 
 # Luaと通信用ライブラリのインストール
 RUN apk add --no-cache \
-    lua5.3 \
+    lua5.4 \
     lua-socket \
     lua-sec \
     lua-cjson \
