@@ -1,0 +1,14 @@
+name: "Lua_Remote_Hub (LRH)"
+description: "Luaベースのリモコン司令部"
+version: "1.0.0"
+slug: "lrh_controller"
+arch:
+  - aarch64
+  - amd64
+  - armv7
+init: false
+options:
+  ha_url: "http://supervisor/core/api"
+  ha_token: ""
+map:
+  - config:rw
