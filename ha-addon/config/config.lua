@@ -31,12 +31,24 @@ end
 -- 3. メイン設定（共通操作 & モード切替）
 config.remap = {
   -- モード切替
-  [C_RT1.keys.SUB_CH]    = function() config.current_mode = mode_tv;       print("📺 Mode: TV") end,
-  [C_RT1.keys.WOOO_LINK] = function() config.current_mode = mode_recorder; print("📼 Mode: Recorder") end,
+  [C_RT1.keys.SUB_CH]    = function()
+    config.current_mode = mode_tv
+    lrh.set_mode_to_ha("TV")
+    lrh.send_ir(J_MX.keys.MODE_DIGITAL)
+    print("📺 Mode: TV")
+  end,
+  [C_RT1.keys.WOOO_LINK] = function()
+    config.current_mode = mode_recorder
+    lrh.set_mode_to_ha("Recorder")
+    lrh.send_cec(HDMI_CEC.keys.HDMI_1)
+    lrh.send_ir(HDMI.keys.NUM_3)
+    print("📼 Mode: Recorder")
+  end,
   [C_RT1.keys.INTERNET]  = function()
     config.current_mode = mode_switch
-    lrh.send_cec(HDMI_CEC.keys.HDMI_2)
-    lrh.send_ir(HDMI.keys.NUM_1)
+    lrh.set_mode_to_ha("Switch")
+    lrh.send_cec(HDMI_CEC.keys.HDMI_1)
+    lrh.send_ir(HDMI.keys.NUM_2)
     print("🎮 Mode: Switch")
   end,
 

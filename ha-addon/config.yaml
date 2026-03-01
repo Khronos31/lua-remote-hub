@@ -12,3 +12,4 @@ options:
   ha_token: ""
 network:
   8888/tcp: 8888
+hassio_api: true
