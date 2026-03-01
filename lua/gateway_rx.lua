@@ -4,7 +4,7 @@ local ltn12 = require("ltn12")
 local cjson = require("cjson")
 
 local rdev = assert(usbir.open(0))
-local HA_URL = "http://homeassistant.local:8123/api/webhook/ir_remote_gateway"
+local HA_URL = "http://192.168.1.130:8123/api/webhook/ir_remote_gateway"
 
 while true do
     local data = rdev:receive()

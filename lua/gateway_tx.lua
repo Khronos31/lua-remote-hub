@@ -17,7 +17,7 @@ print("📡 Command Executor listening on port 8080...")
 while true do
     local client = server:accept()
     if client then
-        client:settimeout(2) -- 確実に最後まで読むためのタイムアウト
+        client:settimeout(1) -- 確実に最後まで読むためのタイムアウト
         
         local request_lines = {}
         local line
