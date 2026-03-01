@@ -10,5 +10,5 @@ init: false
 options:
   ha_url: "http://supervisor/core/api"
   ha_token: ""
-map:
-  - config:rw
+network:
+  8888/tcp: 8888

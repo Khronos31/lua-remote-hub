@@ -39,7 +39,6 @@ install(TARGETS usbir lua_cec_lib DESTINATION lib/lua/5.4)
 install(FILES  
     gateways/gateway_rx.lua
     gateways/gateway_tx.lua
-    ha-addon/remapper.lua
     DESTINATION share/lua-remote-hub/lua
 )
 

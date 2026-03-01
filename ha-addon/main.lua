@@ -3,7 +3,7 @@ local socket = require("socket")
 local cjson  = require("cjson")
 
 -- 1. パス解決：config/lrh_util.lua や config/config.lua を探せるようにする
-package.path = package.path .. ";/config/?.lua;/config/config/?.lua;./?.lua"
+package.path = package.path .. ";/lrh_controller/config/?.lua;./?.lua"
 
 -- 2. ログ出力用関数
 local function log(msg)
@@ -57,15 +57,29 @@ log("📡 LRH Logic Controller: Active on port 8888")
 while true do
     local client = server:accept()
     if client then
-        client:settimeout(1)
-        local body, err = client:receive("*a") -- ボディ全体を受け取る
-        
-        if not err and body then
-            -- ヘッダーを飛ばしてJSON部分のみ抽出する簡易処理（あるいは全体パース）
-            local json_start = body:find("{")
-            if json_start then
-                local json_str = body:sub(json_start)
-                local ok, msg = pcall(cjson.decode, json_str)
+        client:settimeout(0.5) -- タイムアウトを短く設定
+        log("🔍 Connection attempt detected!") -- 接続があったら即ログ
+
+        local line, err = client:receive() -- まず1行目（リクエストライン）を読む
+        local content_length = 0
+
+        if not err then
+            log("📡 Request: " .. tostring(line))
+            -- ヘッダーを読み飛ばしつつ Content-Length を探す
+            while line and line ~= "" do
+                local cl = line:match("Content%-Length: (%d+)")
+                if cl then content_length = tonumber(cl) end
+                line = client:receive()
+            end
+        end
+
+        -- ボディがある場合は読み取る
+        if content_length > 0 then
+            local body = client:receive(content_length)
+            log("📥 Payload: " .. (body or "empty"))
+            
+            -- JSONパースと判定ロジック (ここから先は既存と同じ)
+            local ok, msg = pcall(cjson.decode, body)
                 
                 if ok then
                     -- 【ルートA】物理リモコン信号の判定
@@ -88,10 +102,12 @@ while true do
                         dispatch(msg.type:lower(), msg.code)
                     end
                 end
-            end
         end
-        client:send("HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\nOK")
+
+        -- 即座に応答して切断する
+        client:send("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 13\r\nConnection: close\r\n\r\nLRH_LOGIC_OK\n")
         client:close()
+        log("✅ Request handled and connection closed.")
     end
-    socket.sleep(0.01)
+    socket.sleep(0.02)
 end
