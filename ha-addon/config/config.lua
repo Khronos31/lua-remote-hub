@@ -1,4 +1,4 @@
-local remapper = require("remapper")
+local lrh      = require("lrh_util")
 local C_RT1    = require("C-RT1")
 local J_MX     = require("J-MX100RC")
 local RC_R2    = require("RC-R2")
@@ -11,10 +11,12 @@ local mode_tv       = {}
 local mode_recorder = {}
 local mode_switch   = {}
 
+config.gateway_tx_url = "http://192.168.1.142:8080"
+
 -- 1. 基本一括バインド
-remapper.bind(mode_tv,       C_RT1, J_MX)
-remapper.bind(mode_recorder, C_RT1, RC_R2)
-remapper.bind(mode_switch,   C_RT1, Nintendo)
+lrh.bind(mode_tv,       C_RT1, J_MX)
+lrh.bind(mode_recorder, C_RT1, RC_R2)
+lrh.bind(mode_switch,   C_RT1, Nintendo)
 
 -- 2. 数字キーの放送波集約（D, BS, CS, A すべてを各デバイスのNUMに紐付け）
 local prefixes = { "D_", "BS_", "CS_", "A_" }
@@ -33,8 +35,8 @@ config.remap = {
   [C_RT1.keys.WOOO_LINK] = function() config.current_mode = mode_recorder; print("📼 Mode: Recorder") end,
   [C_RT1.keys.INTERNET]  = function()
     config.current_mode = mode_switch
-    remapper.send_cec(HDMI_CEC.keys.HDMI_2)
-    remapper.send_ir(HDMI.keys.NUM_1)
+    lrh.send_cec(HDMI_CEC.keys.HDMI_2)
+    lrh.send_ir(HDMI.keys.NUM_1)
     print("🎮 Mode: Switch")
   end,
 

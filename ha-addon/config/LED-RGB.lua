@@ -5,34 +5,34 @@ local BUTTONS = {}
 BUTTONS.type = "IR"
 BUTTONS.keys = {
   -- 1段目 (最上段: 緑 / 赤 / Mode)
-  BUTTON_1  = "\x02\x20\x00\x80\x7f\x12\xed",
-  BUTTON_2  = "\x02\x20\x00\x80\x7f\x1a\xe5",
-  BUTTON_3  = "\x02\x20\x00\x80\x7f\x1e\xe1",
+  BUTTON_1  = "02:20:00:80:7f:12:ed",
+  BUTTON_2  = "02:20:00:80:7f:1a:e5",
+  BUTTON_3  = "02:20:00:80:7f:1e:e1",
 
   -- 2段目 (4H / 8H / MultiColor)
-  BUTTON_4  = "\x02\x20\x00\x80\x7f\x01\xfe",
-  BUTTON_5  = "\x02\x20\x00\x80\x7f\x02\xfd",
-  BUTTON_6  = "\x02\x20\x00\x80\x7f\x03\xfc",
+  BUTTON_4  = "02:20:00:80:7f:01:fe",
+  BUTTON_5  = "02:20:00:80:7f:02:fd",
+  BUTTON_6  = "02:20:00:80:7f:03:fc",
 
   -- 3段目
-  BUTTON_7  = "\x02\x20\x00\x80\x7f\x04\xfb",
-  BUTTON_8  = "\x02\x20\x00\x80\x7f\x05\xfa",
-  BUTTON_9  = "\x02\x20\x00\x80\x7f\x06\xf9",
+  BUTTON_7  = "02:20:00:80:7f:04:fb",
+  BUTTON_8  = "02:20:00:80:7f:05:fa",
+  BUTTON_9  = "02:20:00:80:7f:06:f9",
 
   -- 4段目
-  BUTTON_10 = "\x02\x20\x00\x80\x7f\x07\xf8",
-  BUTTON_11 = "\x02\x20\x00\x80\x7f\x08\xf7",
-  BUTTON_12 = "\x02\x20\x00\x80\x7f\x09\xf6",
+  BUTTON_10 = "02:20:00:80:7f:07:f8",
+  BUTTON_11 = "02:20:00:80:7f:08:f7",
+  BUTTON_12 = "02:20:00:80:7f:09:f6",
 
   -- 5段目
-  BUTTON_13 = "\x02\x20\x00\x80\x7f\x0a\xf5",
-  BUTTON_14 = "\x02\x20\x00\x80\x7f\x1b\xe4",
-  BUTTON_15 = "\x02\x20\x00\x80\x7f\x1f\xe0",
+  BUTTON_13 = "02:20:00:80:7f:0a:f5",
+  BUTTON_14 = "02:20:00:80:7f:1b:e4",
+  BUTTON_15 = "02:20:00:80:7f:1f:e0",
 
   -- 6段目 (最下段)
-  BUTTON_16 = "\x02\x20\x00\x80\x7f\x0c\xf3",
-  BUTTON_17 = "\x02\x20\x00\x80\x7f\x0d\xf2",
-  BUTTON_18 = "\x02\x20\x00\x80\x7f\x0e\xf1",
+  BUTTON_16 = "02:20:00:80:7f:0c:f3",
+  BUTTON_17 = "02:20:00:80:7f:0d:f2",
+  BUTTON_18 = "02:20:00:80:7f:0e:f1",
 }
 
 return BUTTONS

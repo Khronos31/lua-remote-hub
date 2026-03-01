@@ -1,92 +1,81 @@
-#!/usr/bin/env lua
+-- ha-addon/main.lua
+local socket = require("socket")
+local cjson  = require("cjson")
 
--- 1. パスの定義
-local config_dir = "/etc/lua-remote-hub/"
-local system_lua_dir = "/usr/share/lua-remote-hub/lua/"
+-- 1. パス解決：自身のディレクトリにある lrh_util.lua や config/ 配下を読み込めるようにする
+local script_path = debug.getinfo(1).source:match("@?(.*[\\/])") or "./"
+package.path = package.path .. ";" .. script_path .. "?.lua;" .. script_path .. "config/?.lua"
 
--- 2. パス解決の設定
--- /etc (設定) -> システムのluaフォルダ -> 標準パス の順で探す
-package.path = config_dir .. "?.lua;" .. 
-               config_dir .. "?/init.lua;" .. 
-               system_lua_dir .. "?.lua;" .. 
-               package.path
+-- 2. ロジックの継承
+local lrh = require("lrh_util") -- config/lrh_util.lua
+local status, config = pcall(require, "config") -- config/config.lua
 
--- Cモジュール (usbir.so) は標準のlibへ
-package.cpath = "/usr/lib/lua/5.4/?.so;" .. package.cpath
-
-local usbir    = require("usbir")
-local cec      = require("cec")
-local remapper = require("remapper")
-
--- 3. config.lua のロード
--- 存在しない場合はエラーを出して終了する
-local status, config = pcall(require, "config")
 if not status then
-    print("Error: Configuration file not found at " .. config_dir .. "config.lua")
+    print("❌ Configuration file (config.lua) not found in config/ directory.")
     os.exit(1)
 end
 
--- ログ出力用関数
+-- 3. 送信先（手足となるゲートウェイ）の定義
+-- スティックPC（旧LRH端末）のIPアドレスを設定してください
+local GATEWAY_TX_URL = config.gateway_tx_url
+
+-- ログ出力
 local function log(msg)
-  print(string.format("[%s] %s", os.date("%Y-%m-%d %H:%M:%S"), msg))
+    print(string.format("[%s] %s", os.date("%Y-%m-%d %H:%M:%S"), msg))
 end
 
--- バイナリデータを16進数文字列に変換
-local function to_hex(data)
-  return (data:gsub('.', function(c)
-    return string.format('%02X ', string.byte(c))
-  end))
+-- 命令送信関数（ゲートウェイへHTTP POST）
+local function dispatch(target_type, code)
+    local payload = cjson.encode({ type = target_type, code = code })
+    log(string.format("🚀 Dispatching %s: %s", target_type, code))
+    
+    -- アドオン内蔵の curl を使用して非同期で送信（ラグ防止）
+    local cmd = string.format("curl -s -X POST -d '%s' %s &", payload, GATEWAY_TX_URL)
+    os.execute(cmd)
 end
 
--- 受信用デバイスのオープン (必須)
-local rdev, err = usbir.open(0)
-if not rdev then
-  log("❌ 受信用デバイスエラー (Index 0): " .. (err or "不明"))
-  os.exit(1)
-end
+lrh.dispatcher = dispatch
 
--- 送信用デバイスのオープン (必須)
-local wdev, err = usbir.open(1)
-if not wdev then
-  log("❌ 送信用デバイスエラー (Index 1): " .. (err or "不明"))
-  os.exit(1)
-end
-
--- remapperに送信デバイスをセット
-remapper.wdev = wdev
-
--- cecをオープン
-local cec_ok, cec_err = cec.init()
-if cec_ok then
-  remapper.cec = cec
-  log("✅ CEC 初期化成功")
-else
-  log("⚠️ CEC 初期化失敗: " .. (cec_err or "不明"))
-end
-
-log("🚀 ir-remapper 起動成功")
-log("📡 受信待機中...")
+-- 4. 信号受信用サーバー起動 (アドオンの Port: 8888 で待機)
+local server = assert(socket.bind("*", 8888))
+server:settimeout(0)
+log("📡 LRH Logic Controller: Listening for signals on port 8888...")
 
 -- メインループ
 while true do
-  local recv_data = rdev:receive()
-  if recv_data and #recv_data > 0 then
-    local action = config.remap[recv_data] or config.current_mode[recv_data]
+    local client = server:accept()
+    if client then
+        client:settimeout(1)
+        local body, err = client:receive()
+        
+        if not err and body then
+            -- 受信側（gateways/gateway_rx.lua）から届いたJSONをパース
+            local ok, msg = pcall(cjson.decode, body)
+            if ok and msg.code then
+                local hex_code = msg.code:lower()
+                log("📩 Received signal: " .. hex_code)
+                
+                -- 旧 main.lua の判定ロジックを継承
+                -- 受信側が既に16進数文字列に変換しているため、バイナリ変換なしで比較
+                local action = config.remap[hex_code] or config.current_mode[hex_code]
 
-    if action then
-      if type(action) == "function" then
-        action(wdev, recv_data)
-      elseif type(action) == "table" and action.code then
-        local t, c = action.type, action.code
-        if t == "IR" then
-          wdev:send(c)
-        elseif t == "BT" then
-          -- 非同期実行でラグを防止
-          os.execute(string.format("python3 /usr/share/lua-remote-hub/scripts/send_key.py %s &", c))
-        elseif t == "CEC" then
-          cec.transmit(c)
+                if action then
+                    if type(action) == "table" and action.code then
+                        -- 送信コマンドの種別判定
+                        local t = action.type:lower()
+                        if t == "ir" or t == "cec" or t == "bt" then
+                            dispatch(t, action.code)
+                        end
+                    elseif type(action) == "function" then
+                        -- 関数形式のバインド（wdevの代わりにdispatchを呼ぶよう要調整）
+                        action(hex_code)
+                    end
+                end
+            end
         end
-      end
+        -- レスポンスを返して接続を即座に解放
+        client:send("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 2\r\n\r\nOK")
+        client:close()
     end
-  end
+    socket.sleep(0.01) -- CPU負荷軽減
 end

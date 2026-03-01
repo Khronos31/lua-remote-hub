@@ -5,64 +5,64 @@ local BUTTONS = {}
 BUTTONS.type = "IR"
 BUTTONS.keys = {
   -- 最上段
-  POWER        = "\x02\x20\x00\x86\xff\x00\xff", -- 電源
-  SCREEN_DISP  = "\x02\x20\x00\x86\xff\x03\xfc", -- 画面表示
-  AUDIO_SELECT = "\x02\x20\x00\x86\xff\x0a\xf5", -- 音声切換
-  TV_POWER     = "\x02\x20\x00\x50\xaf\x17\xe8", -- TV電源
+  POWER        = "02:20:00:86:ff:00:ff", -- 電源
+  SCREEN_DISP  = "02:20:00:86:ff:03:fc", -- 画面表示
+  AUDIO_SELECT = "02:20:00:86:ff:0a:f5", -- 音声切換
+  TV_POWER     = "02:20:00:50:af:17:e8", -- TV電源
   
   -- 放送切換・入力
-  MODE_DIGITAL = "\x02\x20\x00\x86\xff\x90\x6f", -- 地デジ
-  MODE_BS      = "\x02\x20\x00\x86\xff\x8e\x71", -- BS
-  MODE_CS      = "\x02\x20\x00\x86\xff\x8f\x70", -- CS
+  MODE_DIGITAL = "02:20:00:86:ff:90:6f", -- 地デジ
+  MODE_BS      = "02:20:00:86:ff:8e:71", -- BS
+  MODE_CS      = "02:20:00:86:ff:8f:70", -- CS
   -- MODE_TV は赤外線を発信しないため削除
 
   -- 数字キー (放送波共通)
-  NUM_1 = "\x02\x20\x00\x86\xff\x11\xee", NUM_2 = "\x02\x20\x00\x86\xff\x12\xed", NUM_3 = "\x02\x20\x00\x86\xff\x13\xec",
-  NUM_4 = "\x02\x20\x00\x86\xff\x14\xeb", NUM_5 = "\x02\x20\x00\x86\xff\x15\xea", NUM_6 = "\x02\x20\x00\x86\xff\x16\xe9",
-  NUM_7 = "\x02\x20\x00\x86\xff\x17\xe8", NUM_8 = "\x02\x20\x00\x86\xff\x18\xe7", NUM_9 = "\x02\x20\x00\x86\xff\x19\xe6",
-  NUM_10 = "\x02\x20\x00\x86\xff\x1a\xe5", NUM_11 = "\x02\x20\x00\x86\xff\x91\x6e", NUM_12 = "\x02\x20\x00\x86\xff\x92\x6d",
+  NUM_1 = "02:20:00:86:ff:11:ee", NUM_2 = "02:20:00:86:ff:12:ed", NUM_3 = "02:20:00:86:ff:13:ec",
+  NUM_4 = "02:20:00:86:ff:14:eb", NUM_5 = "02:20:00:86:ff:15:ea", NUM_6 = "02:20:00:86:ff:16:e9",
+  NUM_7 = "02:20:00:86:ff:17:e8", NUM_8 = "02:20:00:86:ff:18:e7", NUM_9 = "02:20:00:86:ff:19:e6",
+  NUM_10 = "02:20:00:86:ff:1a:e5", NUM_11 = "02:20:00:86:ff:91:6e", NUM_12 = "02:20:00:86:ff:92:6d",
 
   -- 中央操作エリア
-  VOL_UP       = "\x02\x20\x00\x50\xaf\x12\xed",
-  VOL_DOWN     = "\x02\x20\x00\x50\xaf\x15\xea",
-  CH_ENTRY     = "\x02\x20\x00\x86\xff\x1b\xe4", -- Ch番号入力
-  INPUT_SELECT = "\x02\x20\x00\x50\xaf\x09\xf6", -- TV入力切換
-  CH_UP        = "\x02\x20\x00\x86\xff\x0e\xf1",
-  CH_DOWN      = "\x02\x20\x00\x86\xff\x0d\xf2",
+  VOL_UP       = "02:20:00:50:af:12:ed",
+  VOL_DOWN     = "02:20:00:50:af:15:ea",
+  CH_ENTRY     = "02:20:00:86:ff:1b:e4", -- Ch番号入力
+  INPUT_SELECT = "02:20:00:50:af:09:f6", -- TV入力切換
+  CH_UP        = "02:20:00:86:ff:0e:f1",
+  CH_DOWN      = "02:20:00:86:ff:0d:f2",
 
   -- メニュー・番組表
-  GUIDE        = "\x02\x20\x00\x86\xff\x95\x6a", -- 番組表
-  SEARCH       = "\x02\x20\x00\x86\xff\xa0\x5f", -- さがす
-  REC_LIST     = "\x02\x20\x00\x86\xff\x06\xf9", -- 見る
-  PROGRAM_INFO = "\x02\x20\x00\x86\xff\x96\x69", -- 番組説明
-  INTERNET     = "\x02\x20\x00\x86\xff\xa1\x5e", -- ネット
-  MENU         = "\x02\x20\x00\x86\xff\x07\xf8", -- メニュー
-  RETURN       = "\x02\x20\x00\x86\xff\x10\xef", -- 戻る
+  GUIDE        = "02:20:00:86:ff:95:6a", -- 番組表
+  SEARCH       = "02:20:00:86:ff:a0:5f", -- さがす
+  REC_LIST     = "02:20:00:86:ff:06:f9", -- 見る
+  PROGRAM_INFO = "02:20:00:86:ff:96:69", -- 番組説明
+  INTERNET     = "02:20:00:86:ff:a1:5e", -- ネット
+  MENU         = "02:20:00:86:ff:07:f8", -- メニュー
+  RETURN       = "02:20:00:86:ff:10:ef", -- 戻る
 
   -- 方向キー・決定
-  UP = "\x02\x20\x00\x86\xff\x0b\xf4", DOWN = "\x02\x20\x00\x86\xff\x0c\xf3", 
-  LEFT = "\x02\x20\x00\x86\xff\xa3\x5c", RIGHT = "\x02\x20\x00\x86\xff\xa2\x5d", 
-  ENTER = "\x02\x20\x00\x86\xff\x0f\xf0",
+  UP = "02:20:00:86:ff:0b:f4", DOWN = "02:20:00:86:ff:0c:f3", 
+  LEFT = "02:20:00:86:ff:a3:5c", RIGHT = "02:20:00:86:ff:a2:5d", 
+  ENTER = "02:20:00:86:ff:0f:f0",
 
   -- カラーボタン
-  BLUE = "\x02\x20\x00\x86\xff\xa4\x5b", RED = "\x02\x20\x00\x86\xff\xa5\x5a", 
-  GREEN = "\x02\x20\x00\x86\xff\xa6\x59", YELLOW = "\x02\x20\x00\x86\xff\xa7\x58",
+  BLUE = "02:20:00:86:ff:a4:5b", RED = "02:20:00:86:ff:a5:5a", 
+  GREEN = "02:20:00:86:ff:a6:59", YELLOW = "02:20:00:86:ff:a7:58",
 
   -- 再生・録画操作エリア
-  DATA         = "\x02\x20\x00\x86\xff\xa8\x57", -- dデータ
-  SUB_CH       = "\x02\x20\x00\x86\xff\xa9\x56", -- 裏番組
-  REWIND       = "\x02\x20\x00\x86\xff\x26\xd9", -- 早戻し
-  PLAY         = "\x02\x20\x00\x86\xff\x1f\xe0", -- 再生
-  FAST_FORWARD = "\x02\x20\x00\x86\xff\x23\xdc", -- 早送り
-  PREV_SKIP    = "\x02\x20\x00\x86\xff\xab\x54", -- 前スキップ
-  PAUSE        = "\x02\x20\x00\x86\xff\x20\xdf", -- 一時停止
-  NEXT_SKIP    = "\x02\x20\x00\x86\xff\xaa\x55", -- 次スキップ
-  BACK_10S     = "\x02\x20\x00\x86\xff\x9e\x61", -- 10秒バック
-  STOP         = "\x02\x20\x00\x86\xff\x1e\xe1", -- 停止
-  SKIP_30S     = "\x02\x20\x00\x86\xff\x9d\x62", -- 30秒スキップ
-  REC_MODE     = "\x02\x20\x00\x86\xff\xac\x53", -- 録画モード
-  REC          = "\x02\x20\x00\x86\xff\x80\x7f", -- 録画
-  SUBTITLE     = "\x02\x20\x00\x86\xff\xad\x52", -- 字幕
+  DATA         = "02:20:00:86:ff:a8:57", -- dデータ
+  SUB_CH       = "02:20:00:86:ff:a9:56", -- 裏番組
+  REWIND       = "02:20:00:86:ff:26:d9", -- 早戻し
+  PLAY         = "02:20:00:86:ff:1f:e0", -- 再生
+  FAST_FORWARD = "02:20:00:86:ff:23:dc", -- 早送り
+  PREV_SKIP    = "02:20:00:86:ff:ab:54", -- 前スキップ
+  PAUSE        = "02:20:00:86:ff:20:df", -- 一時停止
+  NEXT_SKIP    = "02:20:00:86:ff:aa:55", -- 次スキップ
+  BACK_10S     = "02:20:00:86:ff:9e:61", -- 10秒バック
+  STOP         = "02:20:00:86:ff:1e:e1", -- 停止
+  SKIP_30S     = "02:20:00:86:ff:9d:62", -- 30秒スキップ
+  REC_MODE     = "02:20:00:86:ff:ac:53", -- 録画モード
+  REC          = "02:20:00:86:ff:80:7f", -- 録画
+  SUBTITLE     = "02:20:00:86:ff:ad:52", -- 字幕
 }
 
 return BUTTONS

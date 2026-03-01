@@ -4,10 +4,10 @@
 local BUTTONS = {}
 BUTTONS.type = "IR"
 BUTTONS.keys = {
-  NUM_1 = "\x01\x22\x00\x80\x7F\x02\xFD\x03",
-  NUM_2 = "\x01\x22\x00\x80\x7F\x04\xFB\x03",
-  NUM_3 = "\x01\x22\x00\x80\x7F\x06\xF9\x03",
-  NEXT  = "\x01\x22\x00\x80\x7F\x08\xF7\x03",
+  NUM_1 = "01:22:00:80:7F:02:FD:03",
+  NUM_2 = "01:22:00:80:7F:04:FB:03",
+  NUM_3 = "01:22:00:80:7F:06:F9:03",
+  NEXT  = "01:22:00:80:7F:08:F7:03",
 }
 
 return BUTTONS
