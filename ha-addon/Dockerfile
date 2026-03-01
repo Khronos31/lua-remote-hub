@@ -1,17 +1,13 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
-# Luaと通信用ライブラリのインストール
-RUN apk add --no-cache \
-    lua5.4 \
-    lua-socket \
-    lua-sec \
-    lua-cjson \
-    curl
+RUN apk add --no-cache lua5.4 lua-socket lua-sec lua-cjson curl
 
-# 実行ファイルをコピー
+# 実行ファイルと設定ファイルをすべてコピー
 COPY run.sh /
 COPY main.lua /
-RUN chmod a+x /run.sh
+# configフォルダの中身をコンテナの /config にコピー
+COPY config/ /config/
 
+RUN chmod a+x /run.sh
 CMD [ "/run.sh" ]
