@@ -3,8 +3,7 @@ local socket = require("socket")
 local cjson  = require("cjson")
 
 -- 1. パス解決：config/lrh_util.lua や config/config.lua を探せるようにする
-local script_path = debug.getinfo(1).source:match("@?(.*[\\/])") or "./"
-package.path = package.path .. ";" .. script_path .. "?.lua;" .. script_path .. "config/?.lua"
+package.path = package.path .. ";/config/?.lua;/config/config/?.lua;./?.lua"
 
 -- 2. ログ出力用関数
 local function log(msg)
