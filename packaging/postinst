@@ -14,9 +14,10 @@ case "$1" in
         systemctl restart bluetooth || true
         
         # サービスの有効化と起動
-        systemctl enable btk-server.service ir-daemon.service
+        systemctl enable btk-server.service ha_gateway_rx.service ha_gateway_tx.service
         systemctl restart btk-server.service || true
-        systemctl restart ir-daemon.service || true
+        systemctl restart ha_gateway_rx.service || true
+        systemctl restart ha_gateway_tx.service || true
     ;;
 esac
 exit 0

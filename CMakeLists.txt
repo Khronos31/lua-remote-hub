@@ -35,18 +35,11 @@ set_target_properties(lua_cec_lib PROPERTIES
 install(TARGETS usbir lua_cec_lib DESTINATION lib/lua/5.4)
 
 # 2. Luaスクリプト
-# 設定ファイルとリモコン定義（サンプル）を /etc に配置
-install(FILES 
-    lua/config/config.lua.sample 
-    DESTINATION /etc/lua-remote-hub
-)
-
 # システム本体のスクリプトは /usr/share に配置
-install(FILES 
-    lua/main.lua 
-    lua/remapper.lua 
-    lua/gateway_rx.lua 
-    lua/gateway_tx.lua 
+install(FILES  
+    gateways/gateway_rx.lua
+    gateways/gateway_tx.lua
+    ha-addon/remapper.lua
     DESTINATION share/lua-remote-hub/lua
 )
 

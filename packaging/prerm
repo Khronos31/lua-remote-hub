@@ -4,8 +4,12 @@ set -e
 case "$1" in
     remove|upgrade)
         systemctl stop ir-daemon.service || true
+        systemctl stop ha_gateway_rx.service || true
+        systemctl stop ha_gateway_tx.service || true
         systemctl stop btk-server.service || true
         systemctl disable ir-daemon.service || true
+        systemctl disable ha_gateway_rx.service || true
+        systemctl disable ha_gateway_tx.service || true
         systemctl disable btk-server.service || true
     ;;
 esac
