@@ -9,7 +9,7 @@ local HA_URL = "http://homeassistant.local:8123/api/webhook/ir_remote_gateway"
 while true do
     local data = rdev:receive()
     if data then
-        local hex = (data:gsub('.', function(c) return string.format('%02X', string.byte(c)) end))
+        local hex = (data:gsub('.', function(c) return string.format('%02x:', string.byte(c)) end):sub(1, -2))
         socket.request {
             url = HA_URL, method = "POST",
             headers = { ["Content-Type"] = "application/json" },

@@ -1,15 +1,27 @@
 local socket = require("socket")
-local remapper = require("remapper")
 local cjson = require("cjson")
 
 local function to_bytes(str)
-   return (str:gsub("..", function(cc) return string.char(tonumber(cc, 16)) end))
+   local clean_str = str:gsub(":", "") -- コロン対応
+   return (clean_str:gsub("..", function(cc) return string.char(tonumber(cc, 16)) end))
 end
 
--- デバイス初期化
-remapper.wdev = assert(require("usbir").open(1))
+-- デバイス初期化 
+local wdev = assert(require("usbir").open(1))
 local cec = require("cec")
-if cec.init() then remapper.cec = cec end
+local cec_enabled = cec.init()
+
+-- 送信実務関数
+local function physical_send(target_type, code)
+    if target_type == "ir" then
+        wdev:send(to_bytes(code))
+    elseif target_type == "cec" and cec_enabled then
+        cec.transmit(code)
+    elseif target_type == "bt" then
+        local script = "/usr/share/lua-remote-hub/scripts/send_key.py"
+        os.execute(string.format("/usr/bin/python3 %s %s &", script, code))
+    end
+end
 
 local server = assert(socket.bind("*", 8080))
 print("📡 Command Executor listening on port 8080...")
@@ -17,7 +29,7 @@ print("📡 Command Executor listening on port 8080...")
 while true do
     local client = server:accept()
     if client then
-        client:settimeout(1) -- 確実に最後まで読むためのタイムアウト
+        client:settimeout(0.1)
         
         local request_lines = {}
         local line
@@ -39,9 +51,7 @@ while true do
                 print("📩 受信JSON: " .. body)
                 local status, cmd = pcall(cjson.decode, body)
                 if status then
-                    if cmd.type == "ir"  then remapper.send_ir(to_bytes(cmd.code)) end
-                    if cmd.type == "cec" then remapper.send_cec(cmd.code)  end
-                    if cmd.type == "bt"  then remapper.send_bt(cmd.code) end
+                    physical_send(cmd.type, cmd.code)
                 else
                     print("❌ JSONパース失敗")
                 end
