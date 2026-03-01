@@ -1,17 +1,19 @@
+-- gateways/gateway_tx.lua
 local socket = require("socket")
 local cjson = require("cjson")
 
+-- ユーティリティ：コロン区切り16進数 -> バイナリ
 local function to_bytes(str)
-   local clean_str = str:gsub(":", "") -- コロン対応
+   local clean_str = str:gsub(":", "")
    return (clean_str:gsub("..", function(cc) return string.char(tonumber(cc, 16)) end))
 end
 
--- デバイス初期化 
+-- デバイス初期化
 local wdev = assert(require("usbir").open(1))
 local cec = require("cec")
 local cec_enabled = cec.init()
 
--- 送信実務関数
+-- 物理送信実行
 local function physical_send(target_type, code)
     if target_type == "ir" then
         wdev:send(to_bytes(code))
@@ -24,42 +26,25 @@ local function physical_send(target_type, code)
 end
 
 local server = assert(socket.bind("*", 8080))
-print("📡 Command Executor listening on port 8080...")
+print("📡 Gateway TX: Listening on port 8080...")
 
 while true do
     local client = server:accept()
     if client then
-        client:settimeout(0.1)
-        
-        local request_lines = {}
-        local line
+        client:settimeout(0.5)
+        local line = client:receive()
         local content_length = 0
-
-        -- 1. ヘッダーを読み切る
-        while true do
-            line = client:receive()
-            if not line or line == "" then break end -- 空行でヘッダー終了
-            -- Content-Length を探す
+        while line and line ~= "" do
             local cl = line:match("Content%-Length: (%d+)")
             if cl then content_length = tonumber(cl) end
+            line = client:receive()
         end
-
-        -- 2. ボディ（JSON）を読み取る
+        
         if content_length > 0 then
-            local body, err = client:receive(content_length)
-            if body then
-                print("📩 受信JSON: " .. body)
-                local status, cmd = pcall(cjson.decode, body)
-                if status then
-                    physical_send(cmd.type, cmd.code)
-                else
-                    print("❌ JSONパース失敗")
-                end
-            end
+            local body = client:receive(content_length)
+            local ok, cmd = pcall(cjson.decode, body)
+            if ok then physical_send(cmd.type, cmd.code) end
         end
-
-        -- 3. HAにレスポンスを返して接続を閉じる
-        client:send("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 2\r\n\r\nOK")
         client:close()
     end
 end
