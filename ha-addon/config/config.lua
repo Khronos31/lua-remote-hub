@@ -11,6 +11,16 @@ local mode_tv       = {}
 local mode_recorder = {}
 local mode_switch   = {}
 
+-- モード名の文字列とテーブルの実体を紐付け
+config.modes = {
+  ["TV"]       = mode_tv,
+  ["Recorder"] = mode_recorder,
+  ["Switch"]   = mode_switch
+}
+
+-- 初期モードを設定
+config.current_mode = config.modes["TV"]
+
 config.gateway_tx_url = "http://192.168.1.142:8080"
 
 -- 1. 基本一括バインド
@@ -31,21 +41,18 @@ end
 -- 3. メイン設定（共通操作 & モード切替）
 config.remap = {
   -- モード切替
-  [C_RT1.keys.SUB_CH]    = function()
-    config.current_mode = mode_tv
+  [C_RT1.keys.SUB_CH] = function()
     lrh.set_mode_to_ha("TV")
     lrh.send_ir(J_MX.keys.MODE_DIGITAL)
     print("📺 Mode: TV")
   end,
   [C_RT1.keys.WOOO_LINK] = function()
-    config.current_mode = mode_recorder
     lrh.set_mode_to_ha("Recorder")
     lrh.send_cec(HDMI_CEC.keys.HDMI_1)
     lrh.send_ir(HDMI.keys.NUM_3)
     print("📼 Mode: Recorder")
   end,
-  [C_RT1.keys.INTERNET]  = function()
-    config.current_mode = mode_switch
+  [C_RT1.keys.INTERNET] = function()
     lrh.set_mode_to_ha("Switch")
     lrh.send_cec(HDMI_CEC.keys.HDMI_1)
     lrh.send_ir(HDMI.keys.NUM_2)
@@ -56,6 +63,4 @@ config.remap = {
   [C_RT1.keys.INPUT_SELECT] = { type = "IR", code = J_MX.keys.INPUT_SELECT },
 }
 
-config.current_mode = mode_tv
 return config
-
