@@ -7,10 +7,15 @@ arch:
   - amd64
   - armv7
 init: false
-options:
-  ha_url: "http://supervisor/core/api"
-  ha_token: ""
-network:
-  8888/tcp: 8888
-host_network: true
+
+# 権限設定
+homeassistant_api: true
 hassio_api: true
+hassio_role: admin
+
+# ネットワーク設定
+host_network: true
+
+# 不要な options と schema の不一致を解消（空にするか削除）
+options: {}
+schema: {}
