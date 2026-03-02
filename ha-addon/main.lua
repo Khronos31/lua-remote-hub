@@ -50,7 +50,7 @@ if not status then
 end
 
 -- 6. サーバー起動 (ポート 8888)
-local server = assert(socket.bind("*", 8888))
+local server = assert(socket.bind("0.0.0.0", 8888))
 server:settimeout(0)
 log("📡 LRH Logic Controller: Active on port 8888")
 
@@ -78,7 +78,7 @@ while true do
             local body = client:receive(content_length)
             log("📥 Payload: " .. (body or "empty"))
             
-            -- JSONパースと判定ロジック (ここから先は既存と同じ)
+            -- JSONパースと判定ロジック 
             local ok, msg = pcall(cjson.decode, body)
                 
                 if ok then
