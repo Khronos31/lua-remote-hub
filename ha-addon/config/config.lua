@@ -29,8 +29,8 @@ local prefixes = { "D_", "BS_", "CS_", "A_" }
 for i = 1, 12 do
   for _, pre in ipairs(prefixes) do
     local source_sig = config.C_RT1.keys[pre .. i]
-    config.TV[source_sig]       = { type = "IR", code = config.J_MX.keys["NUM_"..i] }
-    config.Recorder[source_sig] = { type = "IR", code = config.RC_R2.keys["NUM_"..i] }
+    config.modes.TV[source_sig]       = { type = "IR", code = config.J_MX.keys["NUM_"..i] }
+    config.modes.Recorder[source_sig] = { type = "IR", code = config.RC_R2.keys["NUM_"..i] }
   end
 end
 
@@ -42,13 +42,13 @@ config.remap = {
     lrh.send_ir(config.J_MX.keys.MODE_DIGITAL)
     print("📺 Mode: TV")
   end,
-  [C_RT1.keys.WOOO_LINK] = function()
+  [config.C_RT1.keys.WOOO_LINK] = function()
     lrh.set_mode_to_ha("Recorder")
     lrh.send_cec(config.HDMI_CEC.keys.HDMI_1)
     lrh.send_ir(config.HDMI.keys.NUM_3)
     print("📼 Mode: Recorder")
   end,
-  [C_RT1.keys.INTERNET] = function()
+  [config.C_RT1.keys.INTERNET] = function()
     lrh.set_mode_to_ha("Switch")
     lrh.send_cec(config.HDMI_CEC.keys.HDMI_1)
     lrh.send_ir(config.HDMI.keys.NUM_2)
