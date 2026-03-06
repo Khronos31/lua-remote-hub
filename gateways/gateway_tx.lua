@@ -9,7 +9,11 @@ local function to_bytes(str)
 end
 
 -- デバイス初期化
-local wdev = assert(require("usbir").open(1))
+local wdev, err = require("usbir").open(1)
+if err then
+   print(err)
+end
+
 local cec = require("cec")
 local cec_enabled = cec.init()
 
