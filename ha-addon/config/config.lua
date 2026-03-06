@@ -38,17 +38,20 @@ end
 config.remap = {
   -- モード切替
   [config.C_RT1.keys.SUB_CH] = function()
+    config.current_mode = config.modes["TV"]
     lrh.set_mode_to_ha("TV")
     lrh.send_ir(config.J_MX.keys.MODE_DIGITAL)
     print("📺 Mode: TV")
   end,
   [config.C_RT1.keys.WOOO_LINK] = function()
+    config.current_mode = config.modes["Recorder"]
     lrh.set_mode_to_ha("Recorder")
     lrh.send_cec(config.HDMI_CEC.keys.HDMI_1)
     lrh.send_ir(config.HDMI.keys.NUM_3)
     print("📼 Mode: Recorder")
   end,
   [config.C_RT1.keys.INTERNET] = function()
+    config.current_mode = config.modes["Switch"]
     lrh.set_mode_to_ha("Switch")
     lrh.send_cec(config.HDMI_CEC.keys.HDMI_1)
     lrh.send_ir(config.HDMI.keys.NUM_2)
