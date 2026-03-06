@@ -68,14 +68,21 @@ while true do
           elseif msg.type and msg.code then
             log("🎮 Command from HAOS: " .. msg.type .. " -> " .. msg.code)
             lrh.dispatch(msg.type:lower(), msg.code)
-          elseif msg.type and msg.key then
+          elseif msg.key then
             log("🎮 Command from HAOS: " .. msg.type .. " -> " .. msg.key)
             local keys ={}
             for str in string.gmatch(msg.key, "([^.]+)") do
               table.insert(keys, str)
             end
-            local code = config[keys[1]][keys[2]][keys[3]]
-            lrh.dispatch(msg.type:lower(), code)
+            local hex_code = config[keys[1]][keys[2]][keys[3]]
+            local action = config.remap[hex_code] or config.current_mode[hex_code]
+
+            if action then
+              if type(action) == "table" and action.code then
+                lrh.dispatch(action.type:lower(), action.code)
+              elseif type(action) == "function" then
+                action(hex_code)
+              end
           end
         end
     end
