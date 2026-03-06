@@ -83,6 +83,7 @@ while true do
               elseif type(action) == "function" then
                 action(hex_code)
               end
+            end
           end
         end
     end
