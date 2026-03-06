@@ -69,7 +69,7 @@ while true do
             log("🎮 Command from HAOS: " .. msg.type .. " -> " .. msg.code)
             lrh.dispatch(msg.type:lower(), msg.code)
           elseif msg.key then
-            log("🎮 Command from HAOS: " .. msg.type .. " -> " .. msg.key)
+            log("🎮 Command from HAOS: " .. " -> " .. msg.key)
             local keys ={}
             for str in string.gmatch(msg.key, "([^.]+)") do
               table.insert(keys, str)
