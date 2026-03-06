@@ -65,21 +65,17 @@ while true do
                 action(hex_code)
               end
             end
-          -- 【ルートC】HA側からのモード同期命令
-          elseif msg.type == "system" and msg.command == "set_mode" then
-            local target_mode_name = msg.value
-              local target_table = config.modes[target_mode_name]
-
-            if target_table then
-              config.current_mode = target_table
-              log("✅ Mode switched to: " .. target_mode_name)
-            else
-              log("⚠️ Unknown mode received from HA: " .. tostring(target_mode_name))
-            end
-          -- 【ルートB】HAOS（UI/自動化）からの直接命令
           elseif msg.type and msg.code then
             log("🎮 Command from HAOS: " .. msg.type .. " -> " .. msg.code)
             lrh.dispatch(msg.type:lower(), msg.code)
+          elseif msg.type and msg.key then
+            log("🎮 Command from HAOS: " .. msg.type .. " -> " .. msg.key)
+            local keys ={}
+            for str in string.gmatch(msg.key, "([^.]+)") do
+              table.insert(keys, str)
+            end
+            local code = config[keys[1]][keys[2]][keys[3]]
+            lrh.dispatch(msg.type:lower(), code)
           end
         end
     end
