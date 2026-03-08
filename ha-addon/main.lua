@@ -51,41 +51,59 @@ while true do
       -- JSONパースと判定ロジック 
       local ok, msg = pcall(cjson.decode, body)
         
-        if ok then
-          -- 【ルートA】物理リモコン信号の判定
-          if msg.code and not msg.type then
-            local hex_code = msg.code:lower()
-            log("📩 Signal Received: " .. hex_code)
-            local action = config.remap[hex_code] or config.current_mode[hex_code]
+      if ok then
+        -- 1. 物理リモコン信号（msg.typeなし）
+        if msg.code and not msg.type then
+          local hex_code = msg.code:lower()
+          log("📩 Signal Received: " .. hex_code)
+          local action = config.remap[hex_code] or config.current_mode[hex_code]
 
-            if action then
-              if type(action) == "table" and action.code then
-                lrh.dispatch(action.type:lower(), action.code)
-              elseif type(action) == "function" then
-                action(hex_code)
-              end
-            end
-          elseif msg.type and msg.code then
-            log("🎮 Command from HAOS: " .. msg.type .. " -> " .. msg.code)
-            lrh.dispatch(msg.type:lower(), msg.code)
-          elseif msg.key then
-            log("🎮 Command from HAOS: " .. " -> " .. msg.key)
-            local keys ={}
-            for str in string.gmatch(msg.key, "([^.]+)") do
-              table.insert(keys, str)
-            end
-            local hex_code = config[keys[1]][keys[2]][keys[3]]
-            local action = config.remap[hex_code] or config.current_mode[hex_code]
-
-            if action then
-              if type(action) == "table" and action.code then
-                lrh.dispatch(action.type:lower(), action.code)
-              elseif type(action) == "function" then
-                action(hex_code)
-              end
+          if action then
+            if type(action) == "table" and action.code then
+              lrh.dispatch(action.type:lower(), action.code)
+            elseif type(action) == "function" then
+              action(hex_code)
             end
           end
+        -- 2. HAからのコマンド：変換ロジックを通す (msg.type == "command")
+        elseif msg.type:lower() == "command" and msg.key then
+          log("🎮 Command with Logic: " .. msg.key)
+          local keys = {}
+          for str in string.gmatch(msg.key, "([^.]+)") do table.insert(keys, str) end
+        
+          local hex_code = config[keys[1]][keys[2]][keys[3]]
+          local action = config.remap[hex_code] or config.current_mode[hex_code]
+
+          if action then
+            if type(action) == "table" and action.code then
+              lrh.dispatch(action.type:lower(), action.code)
+            elseif type(action) == "function" then
+              action(hex_code)
+            end
+          end
+        -- 3. HAからのコマンド：キー名から直接転送 (msg.type == "raw_key")
+        elseif msg.type:lower() == "raw_key" and msg.key then
+          log("🎮 Raw Key Transfer: " .. msg.key)
+          local keys = {}
+          for str in string.gmatch(msg.key, "([^.]+)") do table.insert(keys, str) end
+          
+          local target_config = config[keys[1]]
+          local hex_code = nil
+          local send_type = "IR"
+          if target_config and target_config[keys[2]] then
+            hex_code = target_config[keys[2]][keys[3]]
+            send_type = target_config.type or "IR"
+          end
+        
+          if hex_code then
+            lrh.dispatch(send_type:lower(), hex_code)
+          end
+        -- 4. HAからのコマンド：コード直接転送 (msg.type == "ir/bt/cec")
+        elseif msg.type and msg.code then
+          log("🎮 Direct Code: " .. msg.type .. " -> " .. msg.code)
+          lrh.dispatch(msg.type:lower(), msg.code)
         end
+      end
     end
 
     -- 即座に応答して切断する
