@@ -8,7 +8,7 @@ local function log(msg)
 end
 
 -- 2. パス解決：config/lrh_util.lua や config/config.lua を探せるようにする
-package.path = package.path .. ";/config/lua-remote-hub/?.lua;./?.lua"
+-- package.path = package.path .. ";/config/lua-remote-hub/?.lua;./?.lua"
 
 -- 3. モジュールとコンフィグのロード
 local lrh = require("lrh_util")
