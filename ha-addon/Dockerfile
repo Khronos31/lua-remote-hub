@@ -6,6 +6,7 @@ RUN apk add --no-cache lua5.4 lua-socket lua-sec lua-cjson curl
 
 COPY run.sh /
 COPY main.lua /
+COPY lrh_util.lua /
 COPY config/ /defaults/
 
 RUN chmod a+x /run.sh
