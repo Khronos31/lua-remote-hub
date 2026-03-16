@@ -21,4 +21,4 @@ options: {}
 schema: {}
 
 map:
-  - addon_config:rw
+  - config:rw
