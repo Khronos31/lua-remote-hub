@@ -2,10 +2,14 @@
 
 echo "🚀 LRH Logic Controller Starting..."
 
-# にファイルが一つもなければ、初期サンプルをコピーする
-if [ ! -f "/config/config.lua" ]; then
+# マウントされた本体の /config 内にフォルダを作成
+TARGET_DIR="/config/lua-remote-hub"
+
+if [ ! -d f"$TARGET_DIR/comfig.lua" ]; then
+    bashio::log.info "Creating config directory at $TARGET_DIR"
     bashio::log.info "Config files not found. Initializing with default configs..."
-    cp -pr /defaults/. /config/
+    mkdir -p "$TARGET_DIR"
+    cp -pr /defaults/. "$TARGET_DIR/"
 else
     bashio::log.info "Config files found. Skipping initialization."
 fi
