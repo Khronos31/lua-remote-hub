@@ -14,5 +14,8 @@ else
     bashio::log.info "Config files found. Skipping initialization."
 fi
 
+export LUA_PATH="/?.lua;/config/?.lua;;"
+export LUA_CPATH="/?.so;;"
+
 # Lua 5.4 でメインスクリプトを実行
 lua5.4 /main.lua
